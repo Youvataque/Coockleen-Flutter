@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "292806550582",
+    "project_id": "coockleen2",
+    "storage_bucket": "coockleen2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:292806550582:android:ba2755bd1603d4aaf02497",
+        "android_client_info": {
+          "package_name": "com.example.coocklen"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "292806550582-8l8chjhecru0f3cpr4o1esg1b43t49fr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDarLq8W2evBUvj4g9bCwLSItFQIQLmru4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "292806550582-8l8chjhecru0f3cpr4o1esg1b43t49fr.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "292806550582-6n5k31m6vjhc78evrcum2qdv9u01fsro.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.coocklen.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
