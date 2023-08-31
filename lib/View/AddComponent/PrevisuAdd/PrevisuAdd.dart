@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
+import 'package:coocklen/main.dart';
 import 'package:coocklen/View/AddComponent/EtapeAdd.dart';
 import 'package:coocklen/View/AddComponent/IngredientAdd.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -378,7 +379,7 @@ class _PrevisuAddState extends State<PrevisuAdd> {
                         ],
                       ),
                       SizedBox(
-                        height: 35,
+                        height: 45,
                       ),
                     ],
                   ),
@@ -391,6 +392,7 @@ class _PrevisuAddState extends State<PrevisuAdd> {
     );
   }
 
+  void Next() async {}
   void back() {
     Navigator.pop(context);
   }
