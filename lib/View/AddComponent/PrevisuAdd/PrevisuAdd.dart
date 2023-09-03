@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import 'package:coocklen/main.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:coocklen/Component/TopRecettes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PrevisuAdd extends StatefulWidget {
   Uint8List? Addpicture;
@@ -365,7 +367,9 @@ class _PrevisuAddState extends State<PrevisuAdd> {
                             height: 45,
                             width: 120,
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Next();
+                              },
                               child: Text(
                                 "Enregistrer",
                                 style: TextStyle(fontWeight: FontWeight.bold),
@@ -392,7 +396,30 @@ class _PrevisuAddState extends State<PrevisuAdd> {
     );
   }
 
-  void Next() async {}
+  void Next() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String user = prefs.get("FirebaseUID").toString();
+    DocumentReference Docref = db.collection("Recettes").doc();
+    Reference ImagePath =
+        await storage.ref().child("Recettes/${Docref.id}/back.jpg");
+    Uint8List? MyPicture = widget.AddPicture2;
+    if (MyPicture != null) {
+      try {
+        print(Docref.id);
+        ImagePath.putData(MyPicture);
+        Docref.set({
+          "backpath": "Recettes/${Docref.id}/back.jpg",
+          "byuser": user,
+          "difficuly": widget.rating,
+        });
+      } catch (error) {
+        print(error);
+      }
+    } else {
+      print("prob");
+    }
+  }
+
   void back() {
     Navigator.pop(context);
   }
