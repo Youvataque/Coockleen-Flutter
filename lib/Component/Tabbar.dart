@@ -49,7 +49,8 @@ class _tabbarState extends State<tabbar> {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
             primarySwatch: Colors.pink,
-            splashColor: Platform.isIOS ? Colors.transparent : Colors.grey),
+            splashColor: Platform.isIOS ? Colors.transparent : Colors.grey,
+            scaffoldBackgroundColor: Colors.white),
         home: Scaffold(
           appBar: PreferredSize(
             preferredSize: Size.fromHeight(kToolbarHeight),
@@ -60,7 +61,7 @@ class _tabbarState extends State<tabbar> {
             children: BodyTransport,
           ),
           bottomNavigationBar: BottomNavigationBar(
-            backgroundColor: Color(0xFFECECEC),
+            backgroundColor: Colors.white,
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
                 icon: Icon(CupertinoIcons.book),

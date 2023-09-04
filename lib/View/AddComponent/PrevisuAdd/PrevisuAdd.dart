@@ -24,6 +24,7 @@ class PrevisuAdd extends StatefulWidget {
   TextEditingController time;
   int number;
   TextEditingController title = TextEditingController();
+  String categorie;
   // ingredient component
   List<String> Ingredient = [];
   List<double> Quantite = [];
@@ -36,6 +37,7 @@ class PrevisuAdd extends StatefulWidget {
   PrevisuAdd(
       {Key? key,
       required this.title,
+      required this.categorie,
       required this.Addpicture,
       required this.AddPicture2,
       required this.profilpic,
@@ -183,22 +185,7 @@ class _PrevisuAddState extends State<PrevisuAdd> {
                           Padding(
                             padding: EdgeInsets.only(right: 7),
                             child: TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    if (widget.number != 1 &&
-                                        widget.number != 0) {
-                                      for (var x = 0;
-                                          x < widget.Quantite.length;
-                                          x++) {
-                                        widget.Quantite[x] =
-                                            (((widget.number - 1) *
-                                                    widget.Quantite[x]) /
-                                                widget.number);
-                                      }
-                                      widget.number -= 1;
-                                    }
-                                  });
-                                },
+                                onPressed: () {},
                                 style: TextButton.styleFrom(
                                   minimumSize: Size(20, 20),
                                   padding: EdgeInsets.only(
@@ -224,19 +211,7 @@ class _PrevisuAddState extends State<PrevisuAdd> {
                           Padding(
                             padding: EdgeInsets.only(left: 7),
                             child: TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    for (var x = 0;
-                                        x < widget.Quantite.length;
-                                        x++) {
-                                      widget.Quantite[x] =
-                                          (((widget.number + 1) *
-                                                  widget.Quantite[x]) /
-                                              widget.number);
-                                    }
-                                    widget.number += 1;
-                                  });
-                                },
+                                onPressed: () {},
                                 style: TextButton.styleFrom(
                                   minimumSize: Size(20, 20),
                                   padding: EdgeInsets.only(
@@ -425,6 +400,7 @@ class _PrevisuAddState extends State<PrevisuAdd> {
           "backpath": "Recettes/${Docref.id}/back.jpg",
           "byuser": user,
           "title": widget.title.text.trim(),
+          "categorie": widget.categorie,
           "difficuly": widget.rating,
           "time": int.tryParse(widget.time.text) ?? 0,
           // Ingrédients

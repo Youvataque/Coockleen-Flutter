@@ -4,6 +4,7 @@ import 'package:coocklen/View/AddComponent/IngredientAdd.dart';
 import 'package:coocklen/View/AddComponent/PrevisuAdd/PrevisuAdd.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:coocklen/main.dart';
@@ -47,6 +48,7 @@ class _BodyAddState extends State<BodyAdd> {
     "assets/AddImage.jpg",
     fit: BoxFit.cover,
   );
+  String categorie = "classic";
   String Error = "";
   Uint8List? Addpicture;
   Uint8List? AddPicture2;
@@ -125,7 +127,7 @@ class _BodyAddState extends State<BodyAdd> {
                       ),
                       Container(
                         width: 180,
-                        height: 50,
+                        height: 55,
                         child: TextField(
                           controller: title,
                           textAlign: TextAlign.center,
@@ -184,7 +186,7 @@ class _BodyAddState extends State<BodyAdd> {
                 height: 15,
               ),
               Container(
-                height: 45,
+                height: 55,
                 width: 270,
                 child: TextField(
                   controller: time,
@@ -199,7 +201,6 @@ class _BodyAddState extends State<BodyAdd> {
                       fontSize: 15,
                       color: Colors.pink,
                     ),
-                    contentPadding: EdgeInsets.only(top: 3),
                     enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                           color: Colors.blueGrey.withOpacity(0.2),
@@ -209,6 +210,62 @@ class _BodyAddState extends State<BodyAdd> {
                         borderSide: BorderSide(color: Colors.pink),
                         borderRadius: BorderRadius.circular(14.5)),
                   ),
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              SizedBox(
+                width: 270,
+                height: 55,
+                child: DropdownButtonFormField<String>(
+                  value: categorie,
+                  padding: EdgeInsets.zero,
+                  decoration: InputDecoration(
+                    hintText: "Temps de préparation en minutes",
+                    hintStyle: TextStyle(
+                      fontSize: 15,
+                      color: Colors.pink,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Colors.grey.withOpacity(0.2)),
+                        borderRadius: BorderRadius.circular(14.5)),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.pink,
+                        ),
+                        borderRadius: BorderRadius.circular(14.5)),
+                  ),
+                  borderRadius: BorderRadius.circular(14.5),
+                  icon: Icon(
+                    Icons.arrow_drop_down_circle,
+                    color: Colors.pink,
+                  ),
+                  onChanged: (String? Newvalue) {
+                    setState(() {
+                      categorie = Newvalue!;
+                    });
+                  },
+                  items: [
+                    DropdownMenuItem(value: "classic", child: Text("Classic")),
+                    DropdownMenuItem(
+                        value: "debutant",
+                        child:
+                            Text("Débutant", style: TextStyle(fontSize: 15))),
+                    DropdownMenuItem(
+                        value: "complexe",
+                        child:
+                            Text("Recherché", style: TextStyle(fontSize: 15))),
+                    DropdownMenuItem(
+                        value: "pasCher",
+                        child:
+                            Text("Économique", style: TextStyle(fontSize: 15))),
+                    DropdownMenuItem(
+                        value: "exotique",
+                        child:
+                            Text("Éxotique", style: TextStyle(fontSize: 15))),
+                  ],
                 ),
               ),
               SizedBox(
@@ -585,6 +642,7 @@ class _BodyAddState extends State<BodyAdd> {
           MaterialPageRoute(
               builder: (context) => PrevisuAdd(
                   title: title,
+                  categorie: categorie,
                   profilpic: widget.profilpic,
                   userdata: widget.userdata,
                   Addpicture: Addpicture!,

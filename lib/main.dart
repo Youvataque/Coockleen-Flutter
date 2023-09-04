@@ -1,4 +1,3 @@
-
 import 'dart:typed_data';
 import 'package:coocklen/View/Logins/Signin.dart';
 import 'package:coocklen/Component/Tabbar.dart';
@@ -8,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+
 FirebaseFirestore db = FirebaseFirestore.instance;
 FirebaseStorage storage = FirebaseStorage.instance;
 
@@ -22,7 +22,7 @@ void main() async {
 class MyApp extends StatefulWidget {
   MyApp({
     Key? key,
-  }) : super(key : key);
+  }) : super(key: key);
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -32,13 +32,15 @@ class _MyAppState extends State<MyApp> {
   Map<String, dynamic> userdata = {};
   Uint8List? profilpic;
   @override
-  void initState(){
+  void initState() {
     super.initState();
     GetProfil();
   }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(scaffoldBackgroundColor: Colors.white),
       debugShowCheckedModeBanner: false,
       home: FutureBuilder<bool>(
         future: checkLoginStatus(),
@@ -49,13 +51,22 @@ class _MyAppState extends State<MyApp> {
             if (snapshot.hasError) {
               return Text("Erreur: ${snapshot.error}");
             } else {
-              return (snapshot.data == true) ? tabbar(profilpic: profilpic, userdata: userdata,) : Signin(profilpic: profilpic, userdata: userdata,);
+              return (snapshot.data == true)
+                  ? tabbar(
+                      profilpic: profilpic,
+                      userdata: userdata,
+                    )
+                  : Signin(
+                      profilpic: profilpic,
+                      userdata: userdata,
+                    );
             }
           }
         },
       ),
     );
   }
+
   Future<bool> checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? firebaseUID = prefs.getString("FirebaseUID");
@@ -66,6 +77,7 @@ class _MyAppState extends State<MyApp> {
       return false;
     }
   }
+
   void GetProfil() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -88,7 +100,7 @@ class _MyAppState extends State<MyApp> {
           print(error);
         }
       }
-    } catch(error) {
+    } catch (error) {
       print(error.toString());
     }
   }
