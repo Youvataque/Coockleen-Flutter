@@ -75,10 +75,8 @@ class _IngredientAddState extends State<IngredientAdd> {
                 height: 45,
                 width: 95,
                 child: TextField(
-                  keyboardType: TextInputType.number,
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.digitsOnly
-                  ],
+                  keyboardType: TextInputType.numberWithOptions(
+                      decimal: true), // Autorise les nombres décimaux
                   controller: widget.content,
                   textAlign: TextAlign.center,
                   decoration: InputDecoration(

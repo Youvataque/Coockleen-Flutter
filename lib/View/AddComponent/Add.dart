@@ -29,7 +29,6 @@ class AppbarAdd extends StatelessWidget {
   }
 }
 
-// ignore: must_be_immutable
 class BodyAdd extends StatefulWidget {
   Uint8List? profilpic;
   Map<String, dynamic> userdata = {};
@@ -44,11 +43,11 @@ class BodyAdd extends StatefulWidget {
 
 class _BodyAddState extends State<BodyAdd> {
   @override
-  void initState() {
-    super.initState();
-    GetStart();
-  }
-
+  Image Default = Image.asset(
+    "assets/AddImage.jpg",
+    fit: BoxFit.cover,
+  );
+  String Error = "";
   Uint8List? Addpicture;
   Uint8List? AddPicture2;
   TextEditingController title = TextEditingController();
@@ -82,30 +81,30 @@ class _BodyAddState extends State<BodyAdd> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (Addpicture != null)
-                    Container(
-                      height: 150,
-                      width: 120,
-                      child: ElevatedButton(
-                          onPressed: () {
-                            SyncPicture();
-                          },
-                          style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(17.5))),
-                          child: Container(
-                            height: 150,
-                            width: 120,
-                            child: ClipRRect(
+                  Container(
+                    height: 150,
+                    width: 120,
+                    child: ElevatedButton(
+                        onPressed: () {
+                          SyncPicture();
+                        },
+                        style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(17.5))),
+                        child: Container(
+                          height: 150,
+                          width: 120,
+                          child: ClipRRect(
                               borderRadius: BorderRadius.circular(17.5),
-                              child: Image.memory(
-                                Addpicture!,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          )),
-                    ),
+                              child: Addpicture != null
+                                  ? Image.memory(
+                                      Addpicture!,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Default),
+                        )),
+                  ),
                   SizedBox(
                     width: 35,
                   ),
@@ -461,6 +460,14 @@ class _BodyAddState extends State<BodyAdd> {
                   ),
                 ],
               ),
+              Padding(
+                padding: EdgeInsets.only(top: 40),
+                child: Text(
+                  Error,
+                  style: TextStyle(
+                      color: Colors.redAccent, fontWeight: FontWeight.bold),
+                ),
+              ),
             ],
           ),
         ),
@@ -520,19 +527,6 @@ class _BodyAddState extends State<BodyAdd> {
         ));
   }
 
-  void GetStart() async {
-    try {
-      Reference picture =
-          await storage.ref().child("Recettes/Default/AddImage.jpg");
-      final temp2 = await picture.getData(10 * 1024 * 1024);
-      setState(() {
-        Addpicture = temp2;
-      });
-    } catch (error) {
-      print(error);
-    }
-  }
-
   Future<void> SyncPicture() async {
     XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
     // crop
@@ -580,27 +574,38 @@ class _BodyAddState extends State<BodyAdd> {
       StepList = [];
       StepTitle.text = "";
       Step.text = "";
+      Addpicture = null;
     });
-    GetStart();
   }
 
   void Suivant() {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => PrevisuAdd(
-                title: title,
-                profilpic: widget.profilpic,
-                userdata: widget.userdata,
-                Addpicture: Addpicture,
-                AddPicture2: AddPicture2,
-                rating: rating,
-                Ingredient: Ingredient,
-                Quantite: Quantite,
-                StepTitleList: StepTitleList,
-                StepList: StepList,
-                number: number,
-                unitList: unitList,
-                time: time)));
+    if (Addpicture != null) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => PrevisuAdd(
+                  title: title,
+                  profilpic: widget.profilpic,
+                  userdata: widget.userdata,
+                  Addpicture: Addpicture!,
+                  AddPicture2: AddPicture2,
+                  rating: rating,
+                  Ingredient: Ingredient,
+                  Quantite: Quantite,
+                  StepTitleList: StepTitleList,
+                  StepList: StepList,
+                  number: number,
+                  unitList: unitList,
+                  time: time)));
+    } else {
+      setState(() {
+        Error = "Vous devez ajouter une image de présentation !";
+      });
+      Future.delayed(Duration(seconds: 3), () {
+        setState(() {
+          Error = "";
+        });
+      });
+    }
   }
 }

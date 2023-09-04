@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coocklen/Component/Tabbar.dart';
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import 'package:coocklen/main.dart';
@@ -55,6 +56,7 @@ class PrevisuAdd extends StatefulWidget {
 
 class _PrevisuAddState extends State<PrevisuAdd> {
   int stepperIndex = 0;
+  String Error = "";
   Image Default = Image.asset(
     "assets/Default.jpg",
     fit: BoxFit.cover,
@@ -388,6 +390,14 @@ class _PrevisuAddState extends State<PrevisuAdd> {
                     ],
                   ),
                 ),
+                Padding(
+                  padding: EdgeInsets.only(top: 10),
+                  child: Text(
+                    Error,
+                    style: TextStyle(
+                        color: Colors.redAccent, fontWeight: FontWeight.bold),
+                  ),
+                ),
               ]),
             )
           ],
@@ -400,23 +410,56 @@ class _PrevisuAddState extends State<PrevisuAdd> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String user = prefs.get("FirebaseUID").toString();
     DocumentReference Docref = db.collection("Recettes").doc();
-    Reference ImagePath =
+    Reference ImageBackPath =
         await storage.ref().child("Recettes/${Docref.id}/back.jpg");
+    Reference ImageFrontPath =
+        await storage.ref().child("Recettes/${Docref.id}/front.jpg");
     Uint8List? MyPicture = widget.AddPicture2;
     if (MyPicture != null) {
       try {
-        print(Docref.id);
-        ImagePath.putData(MyPicture);
+        print(user);
+        ImageBackPath.putData(MyPicture);
+        ImageFrontPath.putData(widget.Addpicture!);
         Docref.set({
+          "frontpath": "Recettes/${Docref.id}/front.jpg",
           "backpath": "Recettes/${Docref.id}/back.jpg",
           "byuser": user,
+          "title": widget.title.text.trim(),
           "difficuly": widget.rating,
+          "time": int.tryParse(widget.time.text) ?? 0,
+          // Ingrédients
+          "ingredientTitle": widget.Ingredient,
+          "ingredientQuantite": widget.Quantite,
+          "ingredientUnit": widget.unitList,
+          // Etapes
+          "etapeTitle": widget.StepTitleList,
+          "etapeContent": widget.StepList
+        });
+        setState(() {
+          Error = "Recette enregistré avec succès !";
+        });
+        Future.delayed(Duration(seconds: 3), () {
+          setState(() {
+            Error = "";
+          });
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => tabbar(
+                      profilpic: widget.profilpic, userdata: widget.userdata)));
         });
       } catch (error) {
         print(error);
       }
     } else {
-      print("prob");
+      setState(() {
+        Error = "Vous devez ajouter une image de présentation !";
+      });
+      Future.delayed(Duration(seconds: 3), () {
+        setState(() {
+          Error = "";
+        });
+      });
     }
   }
 
