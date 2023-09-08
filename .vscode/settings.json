@@ -1,5 +1,8 @@
 {
     "diffEditor.wordWrap": "off",
     "editor.wordWrapColumn": 2000,
-    "debug.console.wordWrap": false
+    "debug.console.wordWrap": false,
+    "[dart]": {
+        "editor.formatOnSave": false,
+    }
 }

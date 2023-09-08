@@ -11,6 +11,8 @@ import 'package:coocklen/main.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class AppbarAdd extends StatelessWidget {
   const AppbarAdd({super.key});
@@ -585,6 +587,8 @@ class _BodyAddState extends State<BodyAdd> {
   }
 
   Future<void> SyncPicture() async {
+    final int maxSize = 1048576;
+    int CompressNumber = 100;
     XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
     // crop
     if (image != null) {
@@ -608,10 +612,25 @@ class _BodyAddState extends State<BodyAdd> {
       if (croppedImage != null) {
         // send and set
         try {
-          Uint8List temp = await croppedImage.readAsBytes();
+          Uint8List Originale = await croppedImage.readAsBytes();
+          Uint8List CompressedTemp = await croppedImage.readAsBytes();
+          while (CompressedTemp.length > maxSize) {
+            if (CompressNumber == 0) {
+              
+            } else {
+              Uint8List temp2 = await FlutterImageCompress.compressWithList(
+                Originale,
+                quality: CompressNumber,
+              );
+              setState(() {
+                CompressedTemp = temp2;
+                CompressNumber -= 5;
+              });
+            }
+          }
           setState(() {
-            Addpicture = temp;
-          });
+              Addpicture = CompressedTemp;
+            });
         } catch (error) {
           print(error);
         }

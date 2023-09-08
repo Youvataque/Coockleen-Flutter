@@ -7,6 +7,7 @@ import 'package:coocklen/View/AddComponent/EtapeAdd.dart';
 import 'package:coocklen/View/AddComponent/IngredientAdd.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:coocklen/main.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -444,7 +445,10 @@ class _PrevisuAddState extends State<PrevisuAdd> {
   }
 
   void getPicture() async {
-    XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    XFile? image = await ImagePicker()
+        .pickImage(source: ImageSource.gallery, imageQuality: 25);
+    final int maxSize = 1048576;
+    int CompressNumber = 100;
     // crop
     if (image != null) {
       final ImageCropper _imageCropper = ImageCropper();
@@ -467,10 +471,27 @@ class _PrevisuAddState extends State<PrevisuAdd> {
       if (croppedImage != null) {
         // send and set
         try {
-          Uint8List temp = await croppedImage.readAsBytes();
+          Uint8List Originale = await croppedImage.readAsBytes();
+          Uint8List CompressedTemp = await croppedImage.readAsBytes();
+          print(Originale.length);
+          while (CompressedTemp.length > maxSize) {
+            if (CompressNumber == 0) {
+              
+            } else {
+              Uint8List temp2 = await FlutterImageCompress.compressWithList(
+                Originale,
+                quality: CompressNumber,
+              );
+              setState(() {
+                CompressedTemp = temp2;
+                CompressNumber -= 5;
+              });
+            }
+          }
           setState(() {
-            widget.AddPicture2 = temp;
-          });
+              widget.AddPicture2 = CompressedTemp;
+            });
+          print(widget.AddPicture2!.length);
         } catch (error) {
           print(error);
         }

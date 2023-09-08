@@ -21,25 +21,11 @@ class tabbar extends StatefulWidget {
 
 class _tabbarState extends State<tabbar> {
   late List<Widget> BodyTransport;
-  List<Widget> AppbarTransport = [
-    AppbarRecettes(),
-    AppbarAccueil(),
-    AppbarAdd()
-  ];
+  List<Widget> AppbarTransport = [AppbarRecettes(), AppbarAccueil(), AppbarAdd()];
   @override
   void initState() {
     super.initState();
-    BodyTransport = [
-      BodyRecettes(),
-      BodyAccueil(
-        userdata: widget.userdata,
-        profilpic: widget.profilpic,
-      ),
-      BodyAdd(
-        profilpic: widget.profilpic,
-        userdata: widget.userdata,
-      )
-    ];
+    BodyTransport = [BodyRecettes(), BodyAccueil(userdata: widget.userdata,profilpic: widget.profilpic), BodyAdd(profilpic: widget.profilpic, userdata: widget.userdata)];
   }
 
   int _selectedIndex = 1;
