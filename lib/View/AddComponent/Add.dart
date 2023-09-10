@@ -56,7 +56,7 @@ class _BodyAddState extends State<BodyAdd> {
   Uint8List? AddPicture2;
   TextEditingController title = TextEditingController();
   double rating = 1;
-  int number = 5;
+  int number = 4;
   bool start = false;
   TextEditingController time = TextEditingController();
 

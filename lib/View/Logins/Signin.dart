@@ -1,9 +1,12 @@
 import 'dart:typed_data';
 import 'dart:ui';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:coocklen/Component/Tabbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../main.dart';
 import 'Signup.dart';
 import 'PasswordReset.dart';
 
@@ -194,18 +197,46 @@ class _SigninState extends State<Signin> {
         prefs.setString("FirebaseUID", user.uid);
       });
       // si user exist
-      Navigator.push(
+      GetProfil();
+    } catch (error) {
+      // Gestion des erreurs
+      setState(() {
+        Error = ConverLang(error.toString());
+      });
+      print(error.toString());
+    }
+  }
+
+  void GetProfil() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String user = prefs.get("FirebaseUID").toString();
+      DocumentReference docref = db.collection("Users").doc(user);
+      DocumentSnapshot document = await docref.get();
+      Map<String, dynamic> temp;
+      if (document.exists) {
+        temp = document.data() as Map<String, dynamic>;
+        setState(() {
+          widget.userdata = temp;
+        });
+        try {
+          Reference picture = await storage.ref().child(temp["picture"]);
+          final temp2 = await picture.getData(10 * 1024 * 1024);
+          setState(() {
+            widget.profilpic = temp2;
+          });
+          Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => tabbar(
                     profilpic: widget.profilpic,
                     userdata: widget.userdata,
                   )));
+        } catch (error) {
+          print(error);
+        }
+      }
     } catch (error) {
-      // Gestion des erreurs
-      setState(() {
-        Error = ConverLang(error.toString());
-      });
       print(error.toString());
     }
   }

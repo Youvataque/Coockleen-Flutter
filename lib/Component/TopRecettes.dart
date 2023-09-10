@@ -6,11 +6,13 @@ class TopRecettes extends StatefulWidget {
   int typedit;
   Image picturecomp;
   final VoidCallback onModifierPressed;
+  BuildContext PassContext;
   TopRecettes({
     Key? key,
     required this.typedit,
     required this.picturecomp,
     required this.onModifierPressed,
+    required this.PassContext
   });
   @override
   State<TopRecettes> createState() => _TopRecettesState();
@@ -50,7 +52,11 @@ class _TopRecettesState extends State<TopRecettes> {
       leading: Padding(
         padding: EdgeInsets.only(left: 10),
         child: InkWell(
-            onTap: () {},
+            onTap: () {
+              if (widget.typedit == 1) {
+                Navigator.pop(widget.PassContext);
+              }
+            },
             child: Container(
               height: 56.0,
               width: 56.0,

@@ -162,6 +162,10 @@ class _ProfilState extends State<Profil> {
       await FirebaseAuth.instance.signOut();
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.remove("FirebaseUID");
+      setState(() {
+        widget.userdata = {};
+        widget.profilpic = null;
+      });
       Navigator.push(
           context,
           MaterialPageRoute(

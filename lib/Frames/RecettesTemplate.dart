@@ -1,78 +1,62 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:coocklen/Component/Tabbar.dart';
-import 'package:flutter/material.dart';
 import 'dart:typed_data';
-import 'package:coocklen/main.dart';
-import 'package:coocklen/View/AddComponent/EtapeAdd.dart';
-import 'package:coocklen/View/AddComponent/IngredientAdd.dart';
+
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:coocklen/main.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:coocklen/Component/TopRecettes.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class PrevisuAdd extends StatefulWidget {
-  Uint8List? Addpicture;
-  Uint8List? AddPicture2;
-  Uint8List? profilpic;
-  Map<String, dynamic> userdata = {};
-  double rating = 1;
-  TextEditingController time;
-  int number;
-  TextEditingController title = TextEditingController();
-  String categorie;
-  // ingredient component
-  List<String> Ingredient = [];
-  List<double> Quantite = [];
-  List<String> unitList = [];
+import '../main.dart';
 
-  // Etape component
-  List<String> StepTitleList = [];
-  List<String> StepList = [];
-
-  PrevisuAdd(
-      {Key? key,
-      required this.title,
-      required this.categorie,
-      required this.Addpicture,
-      required this.AddPicture2,
-      required this.profilpic,
-      required this.userdata,
-      required this.rating,
-      required this.Ingredient,
-      required this.Quantite,
-      required this.StepTitleList,
-      required this.StepList,
-      required this.unitList,
-      required this.number,
-      required this.time})
-      : super(key: key);
-
+class RecettesTemplate extends StatefulWidget {
+  Map<String, dynamic> Mydico = {};
+  Uint8List? BackPicture;
+  RecettesTemplate({
+    Key? key,
+    required this.Mydico,
+    required this.BackPicture
+    }) : super(key: key);
   @override
-  State<PrevisuAdd> createState() => _PrevisuAddState();
+  State<RecettesTemplate> createState() => _RecettesTemplateState();
 }
 
-class _PrevisuAddState extends State<PrevisuAdd> {
+class _RecettesTemplateState extends State<RecettesTemplate> {
+  int number = 4;
   int stepperIndex = 0;
   String Error = "";
-  Image Default = Image.asset(
-    "assets/Default.jpg",
-    fit: BoxFit.cover,
-  );
-  Image myPicture() {
-    return Image.memory(
-      widget.AddPicture2!,
-      fit: BoxFit.cover,
-    );
+  List<String> ingredientTitle() {
+    List<String> temp = (widget.Mydico["ingredientTitle"] as List)
+        .map((item) => item as String)
+        .toList();
+    return temp;
   }
 
-  Uint8List? AddPicture2;
-  bool start = false;
+  List<double> ingredientQuantite() {
+    List<double> temp = (widget.Mydico["ingredientQuantite"] as List)
+        .map((item) => item as double)
+        .toList();
+    return temp;
+  }
+
+  List<String> ingredientUnit() {
+    List<String> temp = (widget.Mydico["ingredientUnit"] as List)
+        .map((item) => item as String)
+        .toList();
+    return temp;
+  }
+
+  List<String> etapeTitle() {
+    List<String> temp = (widget.Mydico["etapeTitle"] as List)
+        .map((item) => item as String)
+        .toList();
+    return temp;
+  }
+
+  List<String> etapeContent() {
+    List<String> temp = (widget.Mydico["etapeContent"] as List)
+        .map((item) => item as String)
+        .toList();
+    return temp;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -81,12 +65,18 @@ class _PrevisuAddState extends State<PrevisuAdd> {
       home: Scaffold(
         body: CustomScrollView(
           slivers: [
-            TopRecettes(
-                typedit: 0,
-                picturecomp: widget.AddPicture2 != null ? myPicture() : Default,
-                onModifierPressed: getPicture,
-                PassContext: context,
-                ),
+            if (widget.BackPicture != null)
+              TopRecettes(
+                  typedit: 1,
+                  picturecomp: Image.memory(
+                    widget.BackPicture!,
+                    fit: BoxFit.cover,
+                  ),
+                  onModifierPressed: () {
+                    print("n'est pas sencé être visible");
+                  },
+                  PassContext: context,
+              ),
             SliverToBoxAdapter(
               child: Column(children: [
                 SizedBox(
@@ -98,7 +88,7 @@ class _PrevisuAddState extends State<PrevisuAdd> {
                   child: Padding(
                     padding: EdgeInsets.only(left: 30),
                     child: Text(
-                      widget.title.text,
+                      widget.Mydico["title"],
                       style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.bold,
@@ -125,7 +115,14 @@ class _PrevisuAddState extends State<PrevisuAdd> {
                         ),
                         Row(
                             children: List.generate(
-                                widget.rating.round(), (index) => Text("🌶️"))),
+                                widget.Mydico["difficuly"].round(),
+                                (index) => Text("🌶️",
+                                  style: TextStyle(
+                                    fontSize: 11
+                                  ),
+                                )
+                            )
+                          ),
                       ],
                     ),
                     // part 2
@@ -188,7 +185,17 @@ class _PrevisuAddState extends State<PrevisuAdd> {
                           Padding(
                             padding: EdgeInsets.only(right: 7),
                             child: TextButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  setState(() {
+                                    if (number != 1 && number != 0) {
+                                      for (var x = 0; x < widget.Mydico["ingredientQuantite"].length; x++) {
+                                        widget.Mydico["ingredientQuantite"][x] = (((number - 1) * widget.Mydico["ingredientQuantite"][x]) / number);
+                                      }
+                                      number -= 1;
+                                    }
+                                  });
+
+                                },
                                 style: TextButton.styleFrom(
                                   minimumSize: Size(20, 20),
                                   padding: EdgeInsets.only(
@@ -205,7 +212,7 @@ class _PrevisuAddState extends State<PrevisuAdd> {
                                 )),
                           ),
                           Text(
-                            "${widget.number} personnes",
+                            "${number} personnes",
                             style: TextStyle(
                                 color: Color(0xFFECECEC),
                                 fontWeight: FontWeight.w500,
@@ -214,7 +221,14 @@ class _PrevisuAddState extends State<PrevisuAdd> {
                           Padding(
                             padding: EdgeInsets.only(left: 7),
                             child: TextButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  setState(() {
+                                    for (var x = 0; x < widget.Mydico["ingredientQuantite"].length; x++) {
+                                      widget.Mydico["ingredientQuantite"][x] = (((number + 1) * widget.Mydico["ingredientQuantite"][x]) / number);
+                                    }
+                                    number += 1;
+                                  });
+                                },
                                 style: TextButton.styleFrom(
                                   minimumSize: Size(20, 20),
                                   padding: EdgeInsets.only(
@@ -245,7 +259,7 @@ class _PrevisuAddState extends State<PrevisuAdd> {
                     spacing: 5,
                     runSpacing: 5,
                     children: List.generate(
-                        widget.Ingredient.length,
+                        ingredientTitle().length,
                         (index) => ClipRRect(
                             borderRadius: BorderRadius.circular(12.5),
                             child: Container(
@@ -256,7 +270,7 @@ class _PrevisuAddState extends State<PrevisuAdd> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    widget.Ingredient[index],
+                                    ingredientTitle()[index],
                                     style: TextStyle(
                                         fontSize: 9,
                                         fontWeight: FontWeight.bold,
@@ -269,15 +283,18 @@ class _PrevisuAddState extends State<PrevisuAdd> {
                                     thickness: 1,
                                   ),
                                   Text(
-                                    "${widget.Quantite[index].round().toString()} ${widget.unitList[index]}",
+                                    "${ingredientQuantite()[index]} ${ingredientUnit()[index]}",
                                     style: TextStyle(
                                         fontSize: 9,
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.pink),
+                                        color: Colors.pink
+                                    ),
                                   )
                                 ],
                               ),
-                            ))),
+                            )
+                          )
+                      ),
                   ),
                 ),
                 // parti ingredient
@@ -290,7 +307,7 @@ class _PrevisuAddState extends State<PrevisuAdd> {
                   thickness: 1,
                   color: Colors.black26,
                 ),
-                if (widget.StepTitleList.length != 0)
+                if (etapeTitle().length != 0)
                   Stepper(
                     physics: NeverScrollableScrollPhysics(),
                     controlsBuilder:
@@ -301,12 +318,12 @@ class _PrevisuAddState extends State<PrevisuAdd> {
                         ],
                       );
                     },
-                    steps: widget.StepTitleList.map((element) {
-                      var index = widget.StepTitleList.indexOf(element);
+                    steps: etapeTitle().map((element) {
+                      var index = etapeTitle().indexOf(element);
                       return Step(
                         isActive: stepperIndex == index,
-                        title: Text(widget.StepTitleList[index]),
-                        content: Center(child: Text(widget.StepList[index])),
+                        title: Text(etapeTitle()[index]),
+                        content: Center(child: Text(etapeContent()[index])),
                       );
                     }).toList(),
                     onStepTapped: (int NewIndex) {
@@ -316,58 +333,6 @@ class _PrevisuAddState extends State<PrevisuAdd> {
                     },
                     currentStep: stepperIndex,
                   ),
-                Container(
-                  height: 95,
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            height: 45,
-                            width: 120,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                back();
-                              },
-                              child: Text(
-                                "Retour",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(14.5))),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 25,
-                          ),
-                          SizedBox(
-                            height: 45,
-                            width: 120,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Next();
-                              },
-                              child: Text(
-                                "Enregistrer",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(14.5))),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 45,
-                      ),
-                    ],
-                  ),
-                ),
                 Padding(
                   padding: EdgeInsets.only(top: 10),
                   child: Text(
@@ -384,125 +349,8 @@ class _PrevisuAddState extends State<PrevisuAdd> {
     );
   }
 
-  void Next() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String user = prefs.get("FirebaseUID").toString();
-    DocumentReference Docref = db.collection("Recettes").doc();
-    Reference ImageBackPath =
-        await storage.ref().child("Recettes/${Docref.id}/back.jpg");
-    Reference ImageFrontPath =
-        await storage.ref().child("Recettes/${Docref.id}/front.jpg");
-    Uint8List? MyPicture = widget.AddPicture2;
-    if (MyPicture != null) {
-      try {
-        print(user);
-        ImageBackPath.putData(MyPicture);
-        ImageFrontPath.putData(widget.Addpicture!);
-        Docref.set({
-          "frontpath": "Recettes/${Docref.id}/front.jpg",
-          "backpath": "Recettes/${Docref.id}/back.jpg",
-          "byuser": user,
-          "title": widget.title.text.trim(),
-          "categorie": widget.categorie,
-          "difficuly": widget.rating,
-          "time": int.tryParse(widget.time.text) ?? 0,
-          // Ingrédients
-          "ingredientTitle": widget.Ingredient,
-          "ingredientQuantite": widget.Quantite,
-          "ingredientUnit": widget.unitList,
-          // Etapes
-          "etapeTitle": widget.StepTitleList,
-          "etapeContent": widget.StepList
-        });
-        setState(() {
-          Error = "Recette enregistré avec succès !";
-        });
-        Future.delayed(Duration(seconds: 3), () {
-          setState(() {
-            Error = "";
-          });
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => tabbar(
-                      profilpic: widget.profilpic, userdata: widget.userdata)));
-        });
-      } catch (error) {
-        print(error);
-      }
-    } else {
-      setState(() {
-        Error = "Vous devez ajouter une image de présentation !";
-      });
-      Future.delayed(Duration(seconds: 3), () {
-        setState(() {
-          Error = "";
-        });
-      });
-    }
-  }
-
-  void back() {
-    Navigator.pop(context);
-  }
-
-  void getPicture() async {
-    XFile? image = await ImagePicker()
-        .pickImage(source: ImageSource.gallery, imageQuality: 25);
-    final int maxSize = 1048576;
-    int CompressNumber = 100;
-    // crop
-    if (image != null) {
-      final ImageCropper _imageCropper = ImageCropper();
-      CroppedFile? croppedImage = await _imageCropper.cropImage(
-          cropStyle: CropStyle.rectangle,
-          sourcePath: image.path,
-          aspectRatioPresets: [
-            CropAspectRatioPreset.square
-          ],
-          uiSettings: [
-            AndroidUiSettings(
-              lockAspectRatio: false,
-            ),
-            IOSUiSettings(
-              cancelButtonTitle: 'Annuler',
-              doneButtonTitle: 'Terminer',
-              aspectRatioLockEnabled: false,
-            ),
-          ]);
-      if (croppedImage != null) {
-        // send and set
-        try {
-          Uint8List Originale = await croppedImage.readAsBytes();
-          Uint8List CompressedTemp = await croppedImage.readAsBytes();
-          print(Originale.length);
-          while (CompressedTemp.length > maxSize) {
-            if (CompressNumber == 0) {
-              
-            } else {
-              Uint8List temp2 = await FlutterImageCompress.compressWithList(
-                Originale,
-                quality: CompressNumber,
-              );
-              setState(() {
-                CompressedTemp = temp2;
-                CompressNumber -= 5;
-              });
-            }
-          }
-          setState(() {
-              widget.AddPicture2 = CompressedTemp;
-            });
-          print(widget.AddPicture2!.length);
-        } catch (error) {
-          print(error);
-        }
-      }
-    }
-  }
-
   String NeedConvert() {
-    int MyNUmb = int.tryParse(widget.time.text) ?? 0;
+    int MyNUmb = widget.Mydico["time"];
     if (MyNUmb >= 60) {
       return "${(MyNUmb / 60).round()} heures";
     } else {
