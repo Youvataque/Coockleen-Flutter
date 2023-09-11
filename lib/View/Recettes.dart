@@ -42,6 +42,7 @@ class _BodyRecettesState extends State<BodyRecettes> {
   List<Map<String, dynamic>> complexe = [];
   List<Map<String, dynamic>> economique = [];
   List<Map<String, dynamic>> exotique = [];
+  Map<String, dynamic> SearchNames = {};
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -51,7 +52,7 @@ class _BodyRecettesState extends State<BodyRecettes> {
             height: 10,
           ),
           if (classic.length != 0)
-            RecettesParCategorie(classic, "Nos classics :"),
+            RecettesParCategorie(classic, "Nos classiques :"),
           if (debutant.length != 0)
             RecettesParCategorie(debutant, "Pour débuter sans accros :"),
           if (complexe.length != 0)
@@ -84,14 +85,12 @@ class _BodyRecettesState extends State<BodyRecettes> {
         BackPicture = tempPicture;
       });
       Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => RecettesTemplate(
-            Mydico: CategDic,
-            BackPicture: BackPicture,
-          )
-        )
-      );
+          context,
+          MaterialPageRoute(
+              builder: (context) => RecettesTemplate(
+                    Mydico: CategDic,
+                    BackPicture: BackPicture,
+                  )));
     }
   }
 
@@ -105,25 +104,31 @@ class _BodyRecettesState extends State<BodyRecettes> {
         if (temp["categorie"] == "classic") {
           setState(() {
             classic.add(temp);
+            SearchNames[temp["title"]] = temp;
           });
         } else if (temp["categorie"] == "debutant") {
           setState(() {
             debutant.add(temp);
+            SearchNames[temp["title"]] = temp;
           });
         } else if (temp["categorie"] == "complexe") {
           setState(() {
             complexe.add(temp);
+            SearchNames[temp["title"]] = temp;
           });
         } else if (temp["categorie"] == "economique") {
           setState(() {
             economique.add(temp);
+            SearchNames[temp["title"]] = temp;
           });
         } else {
           setState(() {
             exotique.add(temp);
+            SearchNames[temp["title"]] = temp;
           });
         }
       }
+      print(SearchNames);
     } catch (error) {
       print(error);
     }
@@ -166,7 +171,8 @@ class _BodyRecettesState extends State<BodyRecettes> {
                           children: [
                             ElevatedButton(
                               onPressed: () {
-                                BackPic(classic[index]["backpath"], CategList[index]);
+                                BackPic(classic[index]["backpath"],
+                                    CategList[index]);
                               },
                               style: ElevatedButton.styleFrom(
                                   padding: EdgeInsets.zero,
