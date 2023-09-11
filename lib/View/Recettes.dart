@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coocklen/Frames/RecettesTemplate.dart';
@@ -25,7 +24,21 @@ class AppbarRecettes extends StatelessWidget {
 }
 
 class BodyRecettes extends StatefulWidget {
-  const BodyRecettes({super.key});
+  List<Map<String, dynamic>> classic = [];
+  List<Map<String, dynamic>> debutant = [];
+  List<Map<String, dynamic>> complexe = [];
+  List<Map<String, dynamic>> economique = [];
+  List<Map<String, dynamic>> exotique = [];
+  Map<String, dynamic> SearchNames = {};
+  BodyRecettes({
+    Key? key,
+    required this.classic,
+    required this.debutant,
+    required this.complexe,
+    required this.economique,
+    required this.exotique,
+    required this.SearchNames
+  }) : super(key: key);
 
   @override
   State<BodyRecettes> createState() => _BodyRecettesState();
@@ -33,16 +46,6 @@ class BodyRecettes extends StatefulWidget {
 
 class _BodyRecettesState extends State<BodyRecettes> {
   Uint8List? BackPicture;
-  void initState() {
-    getStart();
-  }
-
-  List<Map<String, dynamic>> classic = [];
-  List<Map<String, dynamic>> debutant = [];
-  List<Map<String, dynamic>> complexe = [];
-  List<Map<String, dynamic>> economique = [];
-  List<Map<String, dynamic>> exotique = [];
-  Map<String, dynamic> SearchNames = {};
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -51,17 +54,17 @@ class _BodyRecettesState extends State<BodyRecettes> {
           SizedBox(
             height: 10,
           ),
-          if (classic.length != 0)
-            RecettesParCategorie(classic, "Nos classiques :"),
-          if (debutant.length != 0)
-            RecettesParCategorie(debutant, "Pour débuter sans accros :"),
-          if (complexe.length != 0)
-            RecettesParCategorie(complexe, "Afin de ravir les plus agairis :"),
-          if (economique.length != 0)
-            RecettesParCategorie(
-                economique, "Sans oublier les petites bourses :"),
-          if (exotique.length != 0)
-            RecettesParCategorie(exotique, "Envie de partir à l'aventure ?")
+          
+          if (widget.classic.length != 0)
+            RecettesParCategorie(widget.classic, "Nos classiques :"),
+          if (widget.debutant.length != 0)
+            RecettesParCategorie(widget.debutant, "Pour débuter sans accros :"),
+          if (widget.complexe.length != 0)
+            RecettesParCategorie(widget.complexe, "Afin de ravir les plus agairis :"),
+          if (widget.economique.length != 0)
+            RecettesParCategorie(widget.economique, "Sans oublier les petites bourses :"),
+          if (widget.exotique.length != 0)
+            RecettesParCategorie(widget.exotique, "Envie de partir à l'aventure ?")
         ],
       ),
     );
@@ -90,52 +93,14 @@ class _BodyRecettesState extends State<BodyRecettes> {
               builder: (context) => RecettesTemplate(
                     Mydico: CategDic,
                     BackPicture: BackPicture,
-                  )));
+                  )
+              )
+          );
     }
   }
 
-  void getStart() async {
-    Map<String, dynamic> temp = {};
-    CollectionReference colRef = db.collection("Recettes");
-    try {
-      QuerySnapshot docsRef = await colRef.get();
-      for (QueryDocumentSnapshot docRef in docsRef.docs) {
-        temp = docRef.data() as Map<String, dynamic>;
-        if (temp["categorie"] == "classic") {
-          setState(() {
-            classic.add(temp);
-            SearchNames[temp["title"]] = temp;
-          });
-        } else if (temp["categorie"] == "debutant") {
-          setState(() {
-            debutant.add(temp);
-            SearchNames[temp["title"]] = temp;
-          });
-        } else if (temp["categorie"] == "complexe") {
-          setState(() {
-            complexe.add(temp);
-            SearchNames[temp["title"]] = temp;
-          });
-        } else if (temp["categorie"] == "economique") {
-          setState(() {
-            economique.add(temp);
-            SearchNames[temp["title"]] = temp;
-          });
-        } else {
-          setState(() {
-            exotique.add(temp);
-            SearchNames[temp["title"]] = temp;
-          });
-        }
-      }
-      print(SearchNames);
-    } catch (error) {
-      print(error);
-    }
-  }
 
-  Column RecettesParCategorie(
-      List<Map<String, dynamic>> CategList, String titreCateg) {
+  Column RecettesParCategorie(List<Map<String, dynamic>> CategList, String titreCateg) {
     return Column(
       children: [
         Padding(
@@ -171,7 +136,7 @@ class _BodyRecettesState extends State<BodyRecettes> {
                           children: [
                             ElevatedButton(
                               onPressed: () {
-                                BackPic(classic[index]["backpath"],
+                                BackPic(CategList[index]["backpath"],
                                     CategList[index]);
                               },
                               style: ElevatedButton.styleFrom(

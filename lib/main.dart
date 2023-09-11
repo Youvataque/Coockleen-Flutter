@@ -35,8 +35,15 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     GetProfil();
+    getStart();
   }
 
+  List<Map<String, dynamic>> classic = [];
+  List<Map<String, dynamic>> debutant = [];
+  List<Map<String, dynamic>> complexe = [];
+  List<Map<String, dynamic>> economique = [];
+  List<Map<String, dynamic>> exotique = [];
+  Map<String, dynamic> SearchNames = {};
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -55,7 +62,12 @@ class _MyAppState extends State<MyApp> {
                   ? tabbar(
                       profilpic: profilpic,
                       userdata: userdata,
-                    )
+                      classic: classic,
+                      debutant: debutant,
+                      complexe: complexe,
+                      economique: economique,
+                      exotique: exotique,
+                      SearchNames: SearchNames)
                   : Signin(
                       profilpic: profilpic,
                       userdata: userdata,
@@ -102,6 +114,45 @@ class _MyAppState extends State<MyApp> {
       }
     } catch (error) {
       print(error.toString());
+    }
+  }
+
+  void getStart() async {
+    Map<String, dynamic> temp = {};
+    CollectionReference colRef = db.collection("Recettes");
+    try {
+      QuerySnapshot docsRef = await colRef.get();
+      for (QueryDocumentSnapshot docRef in docsRef.docs) {
+        temp = docRef.data() as Map<String, dynamic>;
+        if (temp["categorie"] == "classic") {
+          setState(() {
+            classic.add(temp);
+            SearchNames[temp["title"]] = temp;
+          });
+        } else if (temp["categorie"] == "debutant") {
+          setState(() {
+            debutant.add(temp);
+            SearchNames[temp["title"]] = temp;
+          });
+        } else if (temp["categorie"] == "complexe") {
+          setState(() {
+            complexe.add(temp);
+            SearchNames[temp["title"]] = temp;
+          });
+        } else if (temp["categorie"] == "economique") {
+          setState(() {
+            economique.add(temp);
+            SearchNames[temp["title"]] = temp;
+          });
+        } else {
+          setState(() {
+            exotique.add(temp);
+            SearchNames[temp["title"]] = temp;
+          });
+        }
+      }
+    } catch (error) {
+      print(error);
     }
   }
 }
