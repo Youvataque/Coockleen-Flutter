@@ -82,11 +82,11 @@ class _PrevisuAddState extends State<PrevisuAdd> {
         body: CustomScrollView(
           slivers: [
             TopRecettes(
-                typedit: 0,
-                picturecomp: widget.AddPicture2 != null ? myPicture() : Default,
-                onModifierPressed: getPicture,
-                PassContext: context,
-                ),
+              typedit: 0,
+              picturecomp: widget.AddPicture2 != null ? myPicture() : Default,
+              onModifierPressed: getPicture,
+              PassContext: context,
+            ),
             SliverToBoxAdapter(
               child: Column(children: [
                 SizedBox(
@@ -348,7 +348,7 @@ class _PrevisuAddState extends State<PrevisuAdd> {
                             width: 120,
                             child: ElevatedButton(
                               onPressed: () {
-                                Next();
+                                Save();
                               },
                               child: Text(
                                 "Enregistrer",
@@ -384,18 +384,22 @@ class _PrevisuAddState extends State<PrevisuAdd> {
     );
   }
 
-  void Next() async {
+  void Save() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String user = prefs.get("FirebaseUID").toString();
     DocumentReference Docref = db.collection("Recettes").doc();
+    DocumentReference LastDocref = db.collection("Last").doc(Docref.id);
+    DocumentReference TabLast = db.collection("Last").doc("Tab");
+    DocumentSnapshot tempbis = await TabLast.get();
+    Map<String, dynamic> temp;
+    List<String> TabList = [];
     Reference ImageBackPath =
-        await storage.ref().child("Recettes/${Docref.id}/back.jpg");
+        storage.ref().child("Recettes/${Docref.id}/back.jpg");
     Reference ImageFrontPath =
         await storage.ref().child("Recettes/${Docref.id}/front.jpg");
     Uint8List? MyPicture = widget.AddPicture2;
     if (MyPicture != null) {
       try {
-        print(user);
         ImageBackPath.putData(MyPicture);
         ImageFrontPath.putData(widget.Addpicture!);
         Docref.set({
@@ -414,21 +418,60 @@ class _PrevisuAddState extends State<PrevisuAdd> {
           "etapeTitle": widget.StepTitleList,
           "etapeContent": widget.StepList
         });
-        setState(() {
-          Error = "Recette enregistré avec succès !";
-        });
-        Future.delayed(Duration(seconds: 3), () {
-          setState(() {
-            Error = "";
-          });
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => tabbar(
-                      profilpic: widget.profilpic, userdata: widget.userdata)));
-        });
+        try {
+          if (tempbis.exists) {
+            temp = tempbis.data() as Map<String, dynamic>;
+            TabList = temp["TabLast"].cast<String>().toList();
+            int index = temp["index"].round();
+            if (TabList[index] == "") {
+              LastDocref.set({
+                "frontpath": "Recettes/${Docref.id}/front.jpg",
+                "backpath": "Recettes/${Docref.id}/back.jpg",
+                "byuser": user,
+                "title": widget.title.text.trim(),
+                "categorie": widget.categorie,
+                "difficuly": widget.rating,
+                "time": int.tryParse(widget.time.text) ?? 0,
+                // Ingrédients
+                "ingredientTitle": widget.Ingredient,
+                "ingredientQuantite": widget.Quantite,
+                "ingredientUnit": widget.unitList,
+                // Etapes
+                "etapeTitle": widget.StepTitleList,
+                "etapeContent": widget.StepList
+              });
+              TabList[index] = Docref.id;
+              if (index == 0) {
+                index = 4;
+              } else {
+                index -= 1;
+              }
+              TabLast.set({"TabLast": TabList, "index": index});
+            }
+            setState(() {
+              Error = "Recette enregistré avec succès !";
+            });
+            Future.delayed(Duration(seconds: 3), () {
+              setState(() {
+                Error = "";
+              });
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => tabbar(
+                          profilpic: widget.profilpic,
+                          userdata: widget.userdata)));
+            });
+          } else {
+            print("prob");
+          }
+        } catch (error) {
+          print(error);
+        }
       } catch (error) {
-        print(error);
+        setState(() {
+          Error = error.toString();
+        });
       }
     } else {
       setState(() {
@@ -478,7 +521,6 @@ class _PrevisuAddState extends State<PrevisuAdd> {
           print(Originale.length);
           while (CompressedTemp.length > maxSize) {
             if (CompressNumber == 0) {
-              
             } else {
               Uint8List temp2 = await FlutterImageCompress.compressWithList(
                 Originale,
@@ -491,8 +533,8 @@ class _PrevisuAddState extends State<PrevisuAdd> {
             }
           }
           setState(() {
-              widget.AddPicture2 = CompressedTemp;
-            });
+            widget.AddPicture2 = CompressedTemp;
+          });
           print(widget.AddPicture2!.length);
         } catch (error) {
           print(error);

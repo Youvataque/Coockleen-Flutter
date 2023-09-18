@@ -12,33 +12,55 @@ import 'package:coocklen/View/AddComponent/Add.dart';
 class tabbar extends StatefulWidget {
   Map<String, dynamic> userdata = {};
   Uint8List? profilpic;
+  //Accueil
+  List<Map<String, dynamic>> Last = [];
+  List<Map<String, dynamic>> Favoris = [];
+
+  //Recettes
   List<Map<String, dynamic>> classic = [];
   List<Map<String, dynamic>> debutant = [];
   List<Map<String, dynamic>> complexe = [];
   List<Map<String, dynamic>> economique = [];
   List<Map<String, dynamic>> exotique = [];
   Map<String, dynamic> SearchNames = {};
-  tabbar({Key? key,
-    required this.profilpic,
-    required this.userdata,
-    List<Map<String, dynamic>> this.classic = const [],
-    List<Map<String, dynamic>> this.debutant = const [],
-    List<Map<String, dynamic>> this.complexe = const [],
-    List<Map<String, dynamic>> this.economique = const [],
-    List<Map<String, dynamic>> this.exotique = const [],
-    Map<String, dynamic> this.SearchNames = const {}
-  }): super(key: key);
+  tabbar(
+      {Key? key,
+      required this.profilpic,
+      required this.userdata,
+      List<Map<String, dynamic>> this.Last = const [],
+      List<Map<String, dynamic>> this.Favoris = const [],
+      List<Map<String, dynamic>> this.classic = const [],
+      List<Map<String, dynamic>> this.debutant = const [],
+      List<Map<String, dynamic>> this.complexe = const [],
+      List<Map<String, dynamic>> this.economique = const [],
+      List<Map<String, dynamic>> this.exotique = const [],
+      Map<String, dynamic> this.SearchNames = const {}})
+      : super(key: key);
   @override
   State<tabbar> createState() => _tabbarState();
 }
 
 class _tabbarState extends State<tabbar> {
   late List<Widget> BodyTransport;
-  List<Widget> AppbarTransport = [AppbarRecettes(), AppbarAccueil(), AppbarAdd()];
+  List<Widget> AppbarTransport = [
+    AppbarRecettes(),
+    AppbarAccueil(),
+    AppbarAdd()
+  ];
   @override
   void initState() {
     super.initState();
-    BodyTransport = [BodyRecettes(classic: widget.classic, debutant: widget.debutant, complexe: widget.complexe, economique: widget.economique, exotique: widget.exotique, SearchNames: widget.SearchNames), BodyAccueil(userdata: widget.userdata,profilpic: widget.profilpic), BodyAdd(profilpic: widget.profilpic, userdata: widget.userdata)];
+    BodyTransport = [
+      BodyRecettes(
+          classic: widget.classic,
+          debutant: widget.debutant,
+          complexe: widget.complexe,
+          economique: widget.economique,
+          exotique: widget.exotique,
+          SearchNames: widget.SearchNames),
+      BodyAccueil(userdata: widget.userdata, profilpic: widget.profilpic, Last: widget.Last, Favoris: widget.Favoris),
+      BodyAdd(profilpic: widget.profilpic, userdata: widget.userdata)
+    ];
   }
 
   int _selectedIndex = 1;

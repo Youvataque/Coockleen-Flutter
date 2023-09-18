@@ -35,9 +35,14 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     GetProfil();
-    getStart();
+    getRecettes();
+    getAccueil();
   }
 
+  // Accueil
+  List<Map<String, dynamic>> Last = [];
+  List<Map<String, dynamic>> Favoris = [];
+  // Recettes
   List<Map<String, dynamic>> classic = [];
   List<Map<String, dynamic>> debutant = [];
   List<Map<String, dynamic>> complexe = [];
@@ -62,6 +67,7 @@ class _MyAppState extends State<MyApp> {
                   ? tabbar(
                       profilpic: profilpic,
                       userdata: userdata,
+                      Last: Last,
                       classic: classic,
                       debutant: debutant,
                       complexe: complexe,
@@ -117,7 +123,25 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  void getStart() async {
+  void getAccueil() async {
+    Map<String, dynamic> temp = {};
+    CollectionReference colRef = await db.collection("Last");
+    try {
+      QuerySnapshot docsRef = await colRef.get();
+      for (QueryDocumentSnapshot docRef in docsRef.docs) {
+        if (docRef.id != "Tab") {
+          temp = docRef.data() as Map<String, dynamic>;
+          setState(() {
+            Last.add(temp);
+          });
+        }
+      }
+    } catch (error) {
+      print(error);
+    }
+  }
+
+  void getRecettes() async {
     Map<String, dynamic> temp = {};
     CollectionReference colRef = db.collection("Recettes");
     try {

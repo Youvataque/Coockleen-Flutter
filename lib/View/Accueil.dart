@@ -41,7 +41,14 @@ class AppbarAccueil extends StatelessWidget {
 class BodyAccueil extends StatefulWidget {
   Map<String, dynamic> userdata = {};
   Uint8List? profilpic;
-  BodyAccueil({Key? key, required this.profilpic, required this.userdata})
+  List<Map<String, dynamic>> Last = [];
+  List<Map<String, dynamic>> Favoris = [];
+  BodyAccueil(
+      {Key? key,
+      required this.profilpic,
+      required this.userdata,
+      required this.Last,
+      required this.Favoris})
       : super(key: key);
 
   @override
@@ -52,32 +59,80 @@ class _BodyAccueilState extends State<BodyAccueil> {
   Uint8List? BackPicture;
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(
-                height: 5,
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          SizedBox(
+            height: 5,
+          ),
+          RecettesParCategorie(widget.Last, "Nos dernières recettes :"),
+          Container(
+            height: 45,
+            width: 340,
+            child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14.5))),
+                onPressed: () {
+                  navigateToProfil();
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      width: 275,
+                      child: Text(
+                        "Ici votre profil",
+                        style: TextStyle(fontSize: 17),
+                      ),
+                    ),
+                    Icon(CupertinoIcons.profile_circled),
+                    SizedBox(
+                      width: 5,
+                    )
+                  ],
+                )),
+          ),
+          SizedBox(
+            height: 7.5,
+          ),
+          Container(
+            height: 45,
+            width: 340,
+            child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14.5))),
+                onPressed: () {},
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      width: 275,
+                      child: Text(
+                        "Et la vos recettes",
+                        style: TextStyle(fontSize: 17),
+                      ),
+                    ),
+                    Icon(CupertinoIcons.book_fill),
+                    SizedBox(
+                      width: 5,
+                    ),
+                  ],
+                )
               ),
-            ],
           ),
-        ),
-        Padding(
-          padding: EdgeInsets.only(),
-          child: Align(
-            alignment: Alignment.bottomRight,
-            child: IconButton(
-              icon: Icon(CupertinoIcons.person_circle),
-              color: Color(0xFFECECEC),
-              iconSize: 50,
-              onPressed: () {
-                navigateToProfil();
-              },
-            ),
+          SizedBox(
+            height: 15,
           ),
-        )
-      ],
+          RecettesParCategorie(widget.Favoris, "Vos recettes favorites :"),
+          SizedBox(
+            height: 5,
+          )
+        ],
+      ),
     );
   }
 
@@ -98,15 +153,17 @@ class _BodyAccueilState extends State<BodyAccueil> {
       });
     }
   }
-   Future<Uint8List> FrontPic(Map<String, dynamic> laRecette) async {
-      Reference ImagePath = await storage.ref().child(laRecette["frontpath"]);
-      Uint8List? tempPicture = await ImagePath.getData(1024 * 1024);
-      if (tempPicture != null) {
-        return tempPicture!;
-      } else {
-        throw Exception("pas possible");
-      }
+
+  Future<Uint8List> FrontPic(Map<String, dynamic> laRecette) async {
+    Reference ImagePath = await storage.ref().child(laRecette["frontpath"]);
+    Uint8List? tempPicture = await ImagePath.getData(1024 * 1024);
+    if (tempPicture != null) {
+      return tempPicture!;
+    } else {
+      throw Exception("pas possible");
     }
+  }
+
   void BackPic(String path, Map<String, dynamic> CategDic) async {
     Reference ImagePath = await storage.ref().child(path);
     Uint8List? tempPicture = await ImagePath.getData(1024 * 1024);

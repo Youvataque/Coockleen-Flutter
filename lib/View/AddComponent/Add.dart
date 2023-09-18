@@ -224,7 +224,6 @@ class _BodyAddState extends State<BodyAdd> {
                   value: categorie,
                   padding: EdgeInsets.zero,
                   decoration: InputDecoration(
-                    hintText: "Temps de préparation en minutes",
                     hintStyle: TextStyle(
                       fontSize: 15,
                       color: Colors.pink,
