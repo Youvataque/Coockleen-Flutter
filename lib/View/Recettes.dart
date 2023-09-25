@@ -1,23 +1,52 @@
 import 'dart:typed_data';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coocklen/Component/SearchBar.dart';
 import 'package:coocklen/Frames/RecettesTemplate.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:coocklen/main.dart';
 
 class AppbarRecettes extends StatelessWidget {
-  const AppbarRecettes({super.key});
+  List<String> SearchNames = [];
+  List<String> SearchUsersNames = [];
+  List<Map<String, dynamic>> SearchContent = [];
+  List<Uint8List> FrontPicture = [];
+
+  AppbarRecettes(
+      {Key? key, required this.SearchContent, required this.SearchNames, required this.SearchUsersNames, required this.FrontPicture})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
       elevation: 2,
-      title: Center(
-        child: const Text(
-          "Recettes",
-          style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+      title: Padding(
+        padding: EdgeInsets.only(left: 50),
+        child: Center(
+          child: const Text(
+            "Recettes",
+            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+          ),
         ),
       ),
+      actions: [
+        Padding(
+          padding: EdgeInsets.only(right: 10),
+          child: IconButton(
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: SearchBars(
+                    SearchContent: SearchContent,
+                    SearchNames: SearchNames,
+                    SearchUsersNames: SearchUsersNames,
+                    FrontPicture: FrontPicture));
+            },
+            icon: Icon(CupertinoIcons.search),
+            splashRadius: 25,
+          ),
+        )
+      ],
       backgroundColor: Colors.pink,
     );
   }
@@ -29,7 +58,7 @@ class BodyRecettes extends StatefulWidget {
   List<Map<String, dynamic>> complexe = [];
   List<Map<String, dynamic>> economique = [];
   List<Map<String, dynamic>> exotique = [];
-  Map<String, dynamic> SearchNames = {};
+
   BodyRecettes({
     Key? key,
     required this.classic,
@@ -37,7 +66,6 @@ class BodyRecettes extends StatefulWidget {
     required this.complexe,
     required this.economique,
     required this.exotique,
-    required this.SearchNames
   }) : super(key: key);
 
   @override
@@ -54,17 +82,19 @@ class _BodyRecettesState extends State<BodyRecettes> {
           SizedBox(
             height: 10,
           ),
-          
           if (widget.classic.length != 0)
             RecettesParCategorie(widget.classic, "Nos classiques :"),
           if (widget.debutant.length != 0)
             RecettesParCategorie(widget.debutant, "Pour débuter sans accros :"),
           if (widget.complexe.length != 0)
-            RecettesParCategorie(widget.complexe, "Afin de ravir les plus agairis :"),
+            RecettesParCategorie(
+                widget.complexe, "Afin de ravir les plus agairis :"),
           if (widget.economique.length != 0)
-            RecettesParCategorie(widget.economique, "Sans oublier les petites bourses :"),
+            RecettesParCategorie(
+                widget.economique, "Sans oublier les petites bourses :"),
           if (widget.exotique.length != 0)
-            RecettesParCategorie(widget.exotique, "Envie de partir à l'aventure ?")
+            RecettesParCategorie(
+                widget.exotique, "Envie de partir à l'aventure ?")
         ],
       ),
     );
@@ -93,14 +123,12 @@ class _BodyRecettesState extends State<BodyRecettes> {
               builder: (context) => RecettesTemplate(
                     Mydico: CategDic,
                     BackPicture: BackPicture,
-                  )
-              )
-          );
+                  )));
     }
   }
 
-
-  Column RecettesParCategorie(List<Map<String, dynamic>> CategList, String titreCateg) {
+  Column RecettesParCategorie(
+      List<Map<String, dynamic>> CategList, String titreCateg) {
     return Column(
       children: [
         Padding(

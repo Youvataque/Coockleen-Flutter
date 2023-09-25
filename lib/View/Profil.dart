@@ -31,7 +31,7 @@ class _ProfilState extends State<Profil> {
       home: Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: Icon(Icons.navigate_before),
             color: Colors.white,
             iconSize: 30,
             onPressed: () {

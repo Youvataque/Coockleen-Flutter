@@ -22,44 +22,63 @@ class tabbar extends StatefulWidget {
   List<Map<String, dynamic>> complexe = [];
   List<Map<String, dynamic>> economique = [];
   List<Map<String, dynamic>> exotique = [];
-  Map<String, dynamic> SearchNames = {};
-  tabbar(
-      {Key? key,
-      required this.profilpic,
-      required this.userdata,
-      List<Map<String, dynamic>> this.Last = const [],
-      List<Map<String, dynamic>> this.Favoris = const [],
-      List<Map<String, dynamic>> this.classic = const [],
-      List<Map<String, dynamic>> this.debutant = const [],
-      List<Map<String, dynamic>> this.complexe = const [],
-      List<Map<String, dynamic>> this.economique = const [],
-      List<Map<String, dynamic>> this.exotique = const [],
-      Map<String, dynamic> this.SearchNames = const {}})
-      : super(key: key);
+
+  // Search
+  List<String> SearchNames = [];
+  List<String> SearchUsersNames = [];
+  List<Map<String, dynamic>> SearchContent = [];
+  List<Uint8List> FrontPicture = [];
+
+  tabbar({
+    Key? key,
+    required this.profilpic,
+    required this.userdata,
+    List<Map<String, dynamic>> this.Last = const [],
+    List<Map<String, dynamic>> this.Favoris = const [],
+    List<Map<String, dynamic>> this.classic = const [],
+    List<Map<String, dynamic>> this.debutant = const [],
+    List<Map<String, dynamic>> this.complexe = const [],
+    List<Map<String, dynamic>> this.economique = const [],
+    List<Map<String, dynamic>> this.exotique = const [],
+    List<String> this.SearchNames = const [],
+    List<String> this.SearchUsersNames = const [],
+    List<Map<String, dynamic>> this.SearchContent = const [],
+    List<Uint8List> this.FrontPicture = const [],
+  }) : super(key: key);
   @override
   State<tabbar> createState() => _tabbarState();
 }
 
 class _tabbarState extends State<tabbar> {
   late List<Widget> BodyTransport;
-  List<Widget> AppbarTransport = [
-    AppbarRecettes(),
-    AppbarAccueil(),
-    AppbarAdd()
-  ];
+  late List<Widget> AppbarTransport;
   @override
   void initState() {
     super.initState();
     BodyTransport = [
       BodyRecettes(
-          classic: widget.classic,
-          debutant: widget.debutant,
-          complexe: widget.complexe,
-          economique: widget.economique,
-          exotique: widget.exotique,
-          SearchNames: widget.SearchNames),
-      BodyAccueil(userdata: widget.userdata, profilpic: widget.profilpic, Last: widget.Last, Favoris: widget.Favoris),
+        classic: widget.classic,
+        debutant: widget.debutant,
+        complexe: widget.complexe,
+        economique: widget.economique,
+        exotique: widget.exotique,
+      ),
+      BodyAccueil(
+          userdata: widget.userdata,
+          profilpic: widget.profilpic,
+          Last: widget.Last,
+          Favoris: widget.Favoris),
       BodyAdd(profilpic: widget.profilpic, userdata: widget.userdata)
+    ];
+    AppbarTransport = [
+      AppbarRecettes(
+        SearchContent: widget.SearchContent,
+        SearchNames: widget.SearchNames,
+        SearchUsersNames: widget.SearchUsersNames,
+        FrontPicture: widget.FrontPicture
+      ),
+      AppbarAccueil(),
+      AppbarAdd()
     ];
   }
 

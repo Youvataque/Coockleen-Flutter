@@ -101,13 +101,9 @@ class _BodyAddState extends State<BodyAdd> {
                           width: 120,
                           child: ClipRRect(
                               borderRadius: BorderRadius.circular(17.5),
-                              child: Addpicture != null
-                                  ? Image.memory(
-                                      Addpicture!,
-                                      fit: BoxFit.cover,
-                                    )
-                                  : Default),
-                        )),
+                              child: Addpicture != null ? Image.memory(Addpicture!,fit: BoxFit.cover,) : Default),
+                        )
+                    ),
                   ),
                   SizedBox(
                     width: 35,

@@ -48,7 +48,13 @@ class _MyAppState extends State<MyApp> {
   List<Map<String, dynamic>> complexe = [];
   List<Map<String, dynamic>> economique = [];
   List<Map<String, dynamic>> exotique = [];
-  Map<String, dynamic> SearchNames = {};
+
+  // tableau searchbar
+  List<String> SearchNames = [];
+  List<Map<String, dynamic>> SearchContent = [];
+  List<Uint8List> FrontPicture = [];
+  List<String> SearchUsersNames = [];
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -73,7 +79,10 @@ class _MyAppState extends State<MyApp> {
                       complexe: complexe,
                       economique: economique,
                       exotique: exotique,
-                      SearchNames: SearchNames)
+                      SearchContent: SearchContent,
+                      SearchNames: SearchNames,
+                      SearchUsersNames: SearchUsersNames,
+                      FrontPicture: FrontPicture)
                   : Signin(
                       profilpic: profilpic,
                       userdata: userdata,
@@ -148,35 +157,65 @@ class _MyAppState extends State<MyApp> {
       QuerySnapshot docsRef = await colRef.get();
       for (QueryDocumentSnapshot docRef in docsRef.docs) {
         temp = docRef.data() as Map<String, dynamic>;
+        String tag = temp["byuser"];
+        DocumentReference userRef = db.collection("Users").doc(tag);
+        DocumentSnapshot UserData = await userRef.get();
+          Map<String, dynamic> UserName =
+              UserData.data() as Map<String, dynamic>;
+          SearchUsersNames.add("${UserName["nom"]} ${UserName["prenom"]}");
         if (temp["categorie"] == "classic") {
           setState(() {
             classic.add(temp);
-            SearchNames[temp["title"]] = temp;
+            // search element
+            SearchNames.add(temp["title"]);
+            SearchContent.add(temp);
           });
         } else if (temp["categorie"] == "debutant") {
           setState(() {
             debutant.add(temp);
-            SearchNames[temp["title"]] = temp;
+            // search element
+            SearchNames.add(temp["title"]);
+            SearchContent.add(temp);
           });
         } else if (temp["categorie"] == "complexe") {
           setState(() {
             complexe.add(temp);
-            SearchNames[temp["title"]] = temp;
+            // search element
+            SearchNames.add(temp["title"]);
+            SearchContent.add(temp);
           });
         } else if (temp["categorie"] == "economique") {
           setState(() {
             economique.add(temp);
-            SearchNames[temp["title"]] = temp;
+            // search element
+            SearchNames.add(temp["title"]);
+            SearchContent.add(temp);
           });
         } else {
           setState(() {
             exotique.add(temp);
-            SearchNames[temp["title"]] = temp;
+            // search element
+            SearchNames.add(temp["title"]);
+            SearchContent.add(temp);
           });
         }
       }
+      FrontPic();
     } catch (error) {
       print(error);
+    }
+  }
+
+  void FrontPic() async {
+    for (int x = 0; x < SearchContent.length; x++) {
+      Reference ImagePath =
+          await storage.ref().child(SearchContent[x]["backpath"]);
+      Uint8List? tempPicture = await ImagePath.getData(1024 * 1024);
+      if (tempPicture != null) {
+        setState(() {
+          FrontPicture.add(tempPicture);
+        });
+      }
     }
   }
 }
