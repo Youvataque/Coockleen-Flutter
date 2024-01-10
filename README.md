@@ -1,6 +1,8 @@
 # coocklen
 
-A new Flutter project.
+Première application flutter pour apprendre les bases du langage. Toute la structure est à revoir y compris l'utilisation de la base de donnée hasardeuse.
+
+À parcourir à vos risques et périls.
 
 ## Getting Started
 
